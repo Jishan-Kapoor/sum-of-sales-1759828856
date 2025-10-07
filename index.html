@@ -11,7 +11,6 @@
         body {
             padding: 20px;
         }
-
         #total-sales {
             font-size: 24px;
             font-weight: bold;
@@ -23,6 +22,16 @@
     <div class="container">
         <h1>Sales Summary</h1>
         <p>Total Sales: <span id="total-sales"></span></p>
+        
+        <table id="product-sales" class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Sales</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
 
     <script>
@@ -31,16 +40,23 @@
             .then(data => {
                 const lines = data.trim().split('\n').filter(line => line.trim());
                 let total = 0;
+                let tableHtml = '';
+
                 for (let i = 1; i < lines.length; i++) {
                     const cols = lines[i].split(',').map(c => c.trim());
-                    if (cols.length > 1) {
-                        const val = parseFloat(cols[1]);
-                        if (!isNaN(val)) total += val;
+                    if (cols.length >= 2) {
+                        const product = cols[0];
+                        const sales = parseFloat(cols[1]);
+                        if (!isNaN(sales)) {
+                            total += sales;
+                            tableHtml += `<tr><td>${product}</td><td>${sales.toFixed(2)}</td></tr>`;
+                        }
                     }
                 }
 
                 if (!isNaN(total)) {
                     document.querySelector('#total-sales').textContent = total.toFixed(2);
+                    document.querySelector('#product-sales tbody').innerHTML = tableHtml;
                 }
             });
     </script>
